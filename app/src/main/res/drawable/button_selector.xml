@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- wykorzystywany gdy przycisk jest naciśnięty -->
     <item android:state_pressed="true">
-        <shape >
-            <corners android:radius="10dp"/>
-            <solid android:color="@color/blue"/>
+        <shape>
+            <solid android:color="@color/green"/>
+
+            <stroke android:width="3dp" android:color="@color/purple"/>
+
+            <corners android:radius="2dp"/>
         </shape>
     </item>
+    <!-- w każdym innym wypadku -->
     <item>
-        <shape >
-            <solid android:color="@color/red"/>
+        <shape>
+            <stroke android:width="3dp" android:color="@android:color/transparent"/>
+
+            <solid android:color="@color/green"/>
+
+            <corners android:radius="2dp"/>
         </shape>
     </item>
 
