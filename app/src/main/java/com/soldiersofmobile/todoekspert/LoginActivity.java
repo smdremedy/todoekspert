@@ -1,20 +1,53 @@
 package com.soldiersofmobile.todoekspert;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 
-public class LoginActivity extends ActionBarActivity {
+
+public class LoginActivity extends AppCompatActivity {
+
+    @InjectView(R.id.usernameEditText)
+    EditText usernameEditText;
+    @InjectView(R.id.passwordEditText)
+    EditText passwordEditText;
+    @InjectView(R.id.loginButton)
+    Button loginButton;
+    @InjectView(R.id.loginButton2)
+    Button loginButton2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        EditText editText = (EditText) findViewById(R.id.usernameEditText);
-        editText.setError("asdasdadsa");
+        ButterKnife.inject(this);
+
+
+    }
+
+    @OnClick(R.id.loginButton)
+    public void tryToLogin() {
+
+
+
+        String username = usernameEditText.getText().toString();
+        String password = passwordEditText.getText().toString();
+
+        if(TextUtils.isEmpty(username)) {
+            
+        }
+
+
+
     }
 
     @Override

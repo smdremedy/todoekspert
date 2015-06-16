@@ -7,10 +7,7 @@
     </style>
 
     <!-- własny styl przycisku -->
-    <style name="TodoButtonStyle" parent="android:style/Widget.Button">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">11dp</item>
+    <style name="TodoButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/button_selector</item>
         <item name="android:textColor">@color/button_text_selector</item>
         <item name="android:textSize">14sp</item>
