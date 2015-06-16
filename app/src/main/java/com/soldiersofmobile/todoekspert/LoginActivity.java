@@ -1,8 +1,12 @@
 package com.soldiersofmobile.todoekspert;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -16,12 +20,16 @@ import com.soldiersofmobile.todoekspert.api.ApiError;
 import com.soldiersofmobile.todoekspert.api.TodoApi;
 import com.soldiersofmobile.todoekspert.api.UserResponse;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.lang.reflect.Type;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import timber.log.Timber;
@@ -80,10 +88,11 @@ public class LoginActivity extends AppCompatActivity {
                         .build().create(TodoApi.class);
 
                 try {
+
                     UserResponse result = todoApi.login(strings[0], strings[1]);
                     Timber.d("Result:" + result.sessionToken);
                     return result;
-                }catch (final RetrofitError retrofitError) {
+                } catch (final RetrofitError retrofitError) {
                     final ApiError error = (ApiError) retrofitError.getBodyAs(ApiError.class);
                     runOnUiThread(new Runnable() {
                         @Override
@@ -118,7 +127,15 @@ public class LoginActivity extends AppCompatActivity {
             protected void onPostExecute(UserResponse result) {
                 super.onPostExecute(result);
                 loginButton.setEnabled(true);
-                if(result != null) {
+                if (result != null) {
+
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor edit = sharedPreferences.edit();
+                    edit.putString("userId", result.objectId);
+                    edit.putString("token", result.sessionToken);
+
+
+                    edit.apply();
 
 
                     finish();
