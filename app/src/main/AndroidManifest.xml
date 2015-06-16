@@ -8,18 +8,15 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name="com.soldiersofmobile.todoekspert.App"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
-            android:name=".TodoListActivity"
+            android:name=".activities.TodoListActivity"
             android:label="@string/title_activity_todo_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,12 +25,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddTodoActivity"
+            android:name=".activities.AddTodoActivity"
             android:label="@string/title_activity_add_todo"
-            android:parentActivityName=".TodoListActivity" >
+            android:parentActivityName=".activities.TodoListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.soldiersofmobile.todoekspert.TodoListActivity" />
+                android:value=".activities.TodoListActivity" />
         </activity>
     </application>
 

@@ -4,19 +4,32 @@ package com.soldiersofmobile.todoekspert;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.JsonObject;
+
+import java.util.Date;
+import java.util.Map;
+
 
 public class Todo implements Parcelable {
 
+    //"content":"empty todo" +
+    //public Date createdAt;//":"2015-05-23T16:29:31.468Z",
+    public String objectId;
 
-    private String task;
+    //public Date updatedAt;
+    public Map<String, JsonObject> user;
+    //"user":{"__type":"Pointer","className":"_User","objectId":"S9g5cEY48r"}}]}
+
+
+    private String content;
     private boolean done;
 
-    public String getTask() {
-        return task;
+    public String getContent() {
+        return content;
     }
 
-    public void setTask(String task) {
-        this.task = task;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public boolean isDone() {
@@ -33,7 +46,7 @@ public class Todo implements Parcelable {
     }
 
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(task);
+        out.writeString(content);
         out.writeByte((byte) (done ? 1 : 0));
     }
 
@@ -53,7 +66,17 @@ public class Todo implements Parcelable {
     }
 
     private Todo(Parcel in) {
-        task = in.readString();
+        content = in.readString();
         done = in.readByte() == 1;
+    }
+
+    @Override
+    public String toString() {
+        return "Todo{" +
+                ", objectId='" + objectId + '\'' +
+                ", user=" + user +
+                ", content='" + content + '\'' +
+                ", done=" + done +
+                '}';
     }
 }

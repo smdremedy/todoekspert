@@ -1,4 +1,4 @@
-package com.soldiersofmobile.todoekspert;
+package com.soldiersofmobile.todoekspert.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,9 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
+import com.soldiersofmobile.todoekspert.R;
+import com.soldiersofmobile.todoekspert.Todo;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -46,7 +49,7 @@ public class AddTodoActivity extends ActionBarActivity {
             taskEditText.setError(getString(R.string.field_cannot_be_empty));
         } else {
             Todo todo = new Todo();
-            todo.setTask(task);
+            todo.setContent(task);
             todo.setDone(doneCheckBox.isChecked());
 
             Intent data = new Intent();

@@ -1,4 +1,4 @@
-package com.soldiersofmobile.todoekspert;
+package com.soldiersofmobile.todoekspert.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,8 +10,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.Date;
+import com.soldiersofmobile.todoekspert.App;
+import com.soldiersofmobile.todoekspert.LoginManager;
+import com.soldiersofmobile.todoekspert.R;
+import com.soldiersofmobile.todoekspert.Todo;
+import com.soldiersofmobile.todoekspert.api.TodoApi;
+import com.soldiersofmobile.todoekspert.api.TodosResponse;
 
+import java.util.Date;
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import timber.log.Timber;
 
 
@@ -19,9 +30,25 @@ public class TodoListActivity extends ActionBarActivity {
 
     public static final int REQUEST_CODE = 123;
 
+    private LoginManager loginManager;
+    private TodoApi todoApi;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App application = (App) getApplication();
+        loginManager = application.getLoginManager();
+        todoApi = application.getTodoApi();
+
+        if(loginManager.needsLogin()) {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+
         setContentView(R.layout.activity_todo_list);
         Timber.plant(new Timber.DebugTree());
     }
@@ -47,25 +74,23 @@ public class TodoListActivity extends ActionBarActivity {
         }
         if(id == R.id.action_refresh) {
 
-            AsyncTask<Date, Void, String> asyncTask = new AsyncTask<Date, Void, String>() {
+            todoApi.getTodos(loginManager.getToken(), new Callback<TodosResponse>() {
                 @Override
-                protected String doInBackground(Date... dates) {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                public void success(TodosResponse todosResponse, Response response) {
+                    for (Todo todo : todosResponse.results) {
+
+
+                        Timber.d("Todos:" + todo);
                     }
-                    return dates[0].toString();
+
                 }
 
                 @Override
-                protected void onPostExecute(String s) {
-                    super.onPostExecute(s);
-                    Toast.makeText(getApplicationContext(), "Refreshed " + s, Toast.LENGTH_SHORT)
-                            .show();
+                public void failure(RetrofitError error) {
+
                 }
-            };
-            asyncTask.execute(new Date());
+            });
+
 
         }
         if(id == R.id.action_new) {
@@ -88,7 +113,7 @@ public class TodoListActivity extends ActionBarActivity {
             if(resultCode == RESULT_OK) {
                 Todo todo = (Todo) data.getParcelableExtra(AddTodoActivity.TODO_KEY);
 
-                Timber.d("OK:" + todo.getTask() + " is done :" + todo.isDone());
+                Timber.d("OK:" + todo.getContent() + " is done :" + todo.isDone());
 
 
             }
@@ -103,6 +128,8 @@ public class TodoListActivity extends ActionBarActivity {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                loginManager.logout();
+
                 finish();
             }
         });
