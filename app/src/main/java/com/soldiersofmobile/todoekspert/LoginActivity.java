@@ -10,12 +10,20 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.soldiersofmobile.todoekspert.api.ApiError;
+import com.soldiersofmobile.todoekspert.api.TodoApi;
+import com.soldiersofmobile.todoekspert.api.UserResponse;
 
 import java.io.File;
+import java.lang.reflect.Type;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import timber.log.Timber;
 
 
@@ -63,19 +71,32 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(final String username, final String password) {
 
-        AsyncTask<String, Integer, Boolean> asyncTask = new AsyncTask<String, Integer, Boolean>() {
+        AsyncTask<String, Integer, UserResponse> asyncTask = new AsyncTask<String, Integer, UserResponse>() {
             @Override
-            protected Boolean doInBackground(String... strings) {
-                try {
-                    for (int i = 0; i < 100; i++) {
-                        Thread.sleep(20);
-                        publishProgress(i);
-                    }
+            protected UserResponse doInBackground(String... strings) {
+                TodoApi todoApi = new RestAdapter.Builder()
+                        .setEndpoint("https://api.parse.com")
+                        .setLogLevel(RestAdapter.LogLevel.FULL)
+                        .build().create(TodoApi.class);
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                try {
+                    UserResponse result = todoApi.login(strings[0], strings[1]);
+                    Timber.d("Result:" + result.sessionToken);
+                    return result;
+                }catch (final RetrofitError retrofitError) {
+                    final ApiError error = (ApiError) retrofitError.getBodyAs(ApiError.class);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), error.error, Toast.LENGTH_LONG).show();
+
+                        }
+                    });
+
+                    return null;
+
                 }
-                return "test".equals(username) && "test".equals(password);
+
             }
 
             @Override
@@ -94,10 +115,10 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onPostExecute(Boolean result) {
+            protected void onPostExecute(UserResponse result) {
                 super.onPostExecute(result);
                 loginButton.setEnabled(true);
-                if(result) {
+                if(result != null) {
 
 
                     finish();
