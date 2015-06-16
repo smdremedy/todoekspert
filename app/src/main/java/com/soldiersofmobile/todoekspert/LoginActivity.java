@@ -1,5 +1,6 @@
 package com.soldiersofmobile.todoekspert;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -60,21 +61,21 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void login(String username, String password) {
+    private void login(final String username, final String password) {
 
-        AsyncTask<String, Integer, File> asyncTask = new AsyncTask<String, Integer, File>() {
+        AsyncTask<String, Integer, Boolean> asyncTask = new AsyncTask<String, Integer, Boolean>() {
             @Override
-            protected File doInBackground(String... strings) {
+            protected Boolean doInBackground(String... strings) {
                 try {
                     for (int i = 0; i < 100; i++) {
-                        Thread.sleep(100);
+                        Thread.sleep(20);
                         publishProgress(i);
                     }
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Timber.d("File: " + strings[0]);
-                return null;
+                return "test".equals(username) && "test".equals(password);
             }
 
             @Override
@@ -93,13 +94,22 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onPostExecute(File file) {
-                super.onPostExecute(file);
+            protected void onPostExecute(Boolean result) {
+                super.onPostExecute(result);
                 loginButton.setEnabled(true);
-                Timber.d("Done");
+                if(result) {
+
+
+                    finish();
+
+                    Intent intent = new Intent(getApplicationContext(), TodoListActivity.class);
+                    startActivity(intent);
+
+                }
+
             }
         };
-        asyncTask.execute("test");
+        asyncTask.execute(username, password);
 
 
     }

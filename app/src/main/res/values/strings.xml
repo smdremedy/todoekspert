@@ -6,4 +6,5 @@
     <string name="enter_username">Enter username</string>
     <string name="login">Login</string>
     <string name="field_cannot_be_empty">Field cannot be empty!</string>
+    <string name="title_activity_todo_list">TodoListActivity</string>
 </resources>
