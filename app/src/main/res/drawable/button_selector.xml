@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item  android:state_enabled="false">
+
+        <shape>
+            <stroke android:width="3dp" android:color="@android:color/transparent"/>
+
+            <solid android:color="@color/white"/>
+
+            <corners android:radius="2dp"/>
+        </shape>
+    </item>
+
     <!-- wykorzystywany gdy przycisk jest naciśnięty -->
     <item android:state_pressed="true">
         <shape>
@@ -11,6 +22,10 @@
             <corners android:radius="2dp"/>
         </shape>
     </item>
+
+
+
+
     <!-- w każdym innym wypadku -->
     <item>
 

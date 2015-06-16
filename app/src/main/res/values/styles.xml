@@ -3,6 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:button">@style/TodoButtonStyle</item>
         <item name="android:buttonStyle">@style/TodoButtonStyle</item>
     </style>
 
