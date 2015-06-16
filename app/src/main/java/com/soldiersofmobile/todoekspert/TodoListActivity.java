@@ -1,17 +1,25 @@
 package com.soldiersofmobile.todoekspert;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import timber.log.Timber;
+
 
 public class TodoListActivity extends ActionBarActivity {
+
+    public static final int REQUEST_CODE = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list);
+        Timber.plant(new Timber.DebugTree());
     }
 
     @Override
@@ -29,10 +37,44 @@ public class TodoListActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            showLogoutDialog();
             return true;
+        }
+        if(id == R.id.action_new) {
+            Intent intent = new Intent(getApplicationContext(), AddTodoActivity.class);
+            startActivityForResult(intent, REQUEST_CODE);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_CODE) {
+            Timber.d("Result:" + resultCode + " data: " + data);
+            if(resultCode == RESULT_OK) {
+                Timber.d("OK:" + data.getStringExtra(AddTodoActivity.TASK_KEY));
+
+
+            }
+
+        }
+    }
+
+    private void showLogoutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.are_you_sure));
+        builder.setMessage(getString(R.string.do_you_want_to_logout));
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, null);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }
