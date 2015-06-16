@@ -3,6 +3,7 @@ package com.soldiersofmobile.todoekspert;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -17,7 +18,7 @@ import butterknife.OnClick;
 public class AddTodoActivity extends ActionBarActivity {
 
 
-    public static final String TASK_KEY = "task";
+    public static final String TODO_KEY = "todo";
     @InjectView(R.id.taskEditText)
     EditText taskEditText;
     @InjectView(R.id.doneCheckBox)
@@ -34,11 +35,26 @@ public class AddTodoActivity extends ActionBarActivity {
 
     @OnClick(R.id.saveButton)
     public void addTask() {
-        Intent data = new Intent();
-        data.putExtra(TASK_KEY, taskEditText.getText().toString());
-        setResult(RESULT_OK, data);
-        finish();
+        tryToSave();
 
+
+    }
+
+    private void tryToSave() {
+        String task = taskEditText.getText().toString();
+        if(TextUtils.isEmpty(task)) {
+            taskEditText.setError(getString(R.string.field_cannot_be_empty));
+        } else {
+            Todo todo = new Todo();
+            todo.setTask(task);
+            todo.setDone(doneCheckBox.isChecked());
+
+            Intent data = new Intent();
+            data.putExtra(TODO_KEY, todo);
+            setResult(RESULT_OK, data);
+            finish();
+
+        }
     }
 
     @Override

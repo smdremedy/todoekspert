@@ -2,11 +2,15 @@ package com.soldiersofmobile.todoekspert;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.Date;
 
 import timber.log.Timber;
 
@@ -41,12 +45,39 @@ public class TodoListActivity extends ActionBarActivity {
             showLogoutDialog();
             return true;
         }
+        if(id == R.id.action_refresh) {
+
+            AsyncTask<Date, Void, String> asyncTask = new AsyncTask<Date, Void, String>() {
+                @Override
+                protected String doInBackground(Date... dates) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return dates[0].toString();
+                }
+
+                @Override
+                protected void onPostExecute(String s) {
+                    super.onPostExecute(s);
+                    Toast.makeText(getApplicationContext(), "Refreshed " + s, Toast.LENGTH_SHORT)
+                            .show();
+                }
+            };
+            asyncTask.execute(new Date());
+
+        }
         if(id == R.id.action_new) {
-            Intent intent = new Intent(getApplicationContext(), AddTodoActivity.class);
-            startActivityForResult(intent, REQUEST_CODE);
+            startAddTodo();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startAddTodo() {
+        Intent intent = new Intent(getApplicationContext(), AddTodoActivity.class);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     @Override
@@ -55,7 +86,9 @@ public class TodoListActivity extends ActionBarActivity {
         if(requestCode == REQUEST_CODE) {
             Timber.d("Result:" + resultCode + " data: " + data);
             if(resultCode == RESULT_OK) {
-                Timber.d("OK:" + data.getStringExtra(AddTodoActivity.TASK_KEY));
+                Todo todo = (Todo) data.getParcelableExtra(AddTodoActivity.TODO_KEY);
+
+                Timber.d("OK:" + todo.getTask() + " is done :" + todo.isDone());
 
 
             }
