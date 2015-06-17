@@ -11,15 +11,38 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+        //multiDexEnabled true
     }
-    buildTypes {
+
+
+
+    signingConfigs {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            storeFile file("../release.jks")
+            storePassword "storepassword"
+            keyAlias "todoekspert"
+            keyPassword "keypassowrd"
         }
     }
-}
 
+
+    buildTypes {
+        release {
+            debuggable false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def file = output.outputFile
+            output.outputFile = new File(file.parent, "todoekspert-" + defaultConfig.versionName + ".apk")
+        }
+    }
+
+}
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.1.1'
