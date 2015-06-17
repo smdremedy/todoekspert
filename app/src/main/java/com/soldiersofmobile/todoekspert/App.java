@@ -9,6 +9,7 @@ import com.soldiersofmobile.todoekspert.di.TodoComponent;
 import com.soldiersofmobile.todoekspert.di.TodoModule;
 
 import retrofit.RestAdapter;
+import timber.log.Timber;
 
 public class App extends Application {
 
@@ -22,6 +23,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Timber.plant(new Timber.DebugTree());
 
         todoComponent = DaggerTodoComponent.builder()
                 .todoModule(new TodoModule(this))

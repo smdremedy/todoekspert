@@ -1,6 +1,7 @@
 package com.soldiersofmobile.todoekspert.di;
 
 import com.soldiersofmobile.todoekspert.LoginManager;
+import com.soldiersofmobile.todoekspert.RefreshIntentService;
 import com.soldiersofmobile.todoekspert.activities.LoginActivity;
 import com.soldiersofmobile.todoekspert.activities.TodoListActivity;
 
@@ -16,7 +17,7 @@ public interface TodoComponent {
 
     void inject(LoginActivity loginActivity);
 
-    LoginManager getLoginManager();
-
     void inject(TodoListActivity todoListActivity);
+
+    void inject(RefreshIntentService refreshIntentService);
 }

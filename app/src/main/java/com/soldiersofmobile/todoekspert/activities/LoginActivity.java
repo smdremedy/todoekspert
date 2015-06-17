@@ -57,7 +57,6 @@ public class LoginActivity extends AppCompatActivity implements LoginManager.Log
 
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
-        Timber.plant(new Timber.DebugTree());
 
     }
 

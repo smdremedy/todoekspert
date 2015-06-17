@@ -22,9 +22,14 @@ public class TodoModule {
         this.context = context;
     }
 
+    @Provides
+    public Context provideContext() {
+        return context;
+    }
+
     @Singleton
     @Provides
-    public SharedPreferences provideSharedPreferences() {
+    public SharedPreferences provideSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 

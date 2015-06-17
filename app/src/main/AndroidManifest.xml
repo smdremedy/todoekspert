@@ -32,6 +32,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.TodoListActivity" />
         </activity>
+
+        <service android:name=".RefreshIntentService"
+            />
     </application>
 
 </manifest>

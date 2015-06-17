@@ -1,7 +1,11 @@
 package com.soldiersofmobile.todoekspert.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -9,29 +13,23 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.SimpleCursorAdapter;
 
 import com.soldiersofmobile.todoekspert.App;
 import com.soldiersofmobile.todoekspert.LoginManager;
 import com.soldiersofmobile.todoekspert.R;
+import com.soldiersofmobile.todoekspert.RefreshIntentService;
 import com.soldiersofmobile.todoekspert.Todo;
 import com.soldiersofmobile.todoekspert.api.TodoApi;
 import com.soldiersofmobile.todoekspert.api.TodosResponse;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.soldiersofmobile.todoekspert.db.TodoDao;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnItemClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -47,10 +45,37 @@ public class TodoListActivity extends AppCompatActivity {
     @Inject
     TodoApi todoApi;
 
+    @Inject
+    TodoDao todoDao;
+
     @InjectView(R.id.todosList)
     ListView todosList;
-    private TodoAdapter adapter;
+    //private TodoAdapter adapter;
+    private SimpleCursorAdapter adapter;
+    private String[] from = new String[]{TodoDao.C_CONTENT, TodoDao.C_DONE};
+    private int[] to = new int[]{R.id.itemDoneCheckBox, R.id.itemDoneCheckBox};
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            refresh();
+
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(broadcastReceiver, new IntentFilter(RefreshIntentService.ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,127 +92,28 @@ public class TodoListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_todo_list);
         ButterKnife.inject(this);
-        Timber.plant(new Timber.DebugTree());
 
 
-        adapter = new TodoAdapter(LayoutInflater.from(getApplicationContext()));
+        //adapter = new TodoAdapter(LayoutInflater.from(getApplicationContext()));
+        adapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list_item,
+                null, from, to, 0);
+        adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+            @Override
+            public boolean setViewValue(View view, Cursor cursor, int i) {
+                int columnIndex = cursor.getColumnIndex(TodoDao.C_DONE);
+                if(columnIndex == i) {
+                    int doneInt = cursor.getInt(columnIndex);
+                    CheckBox checkBox = (CheckBox) view;
+                    checkBox.setChecked(doneInt == 1);
+                    return true;
+
+                }
+                return false;
+            }
+        });
         todosList.setAdapter(adapter);
 
 
-    }
-
-
-
-    static class TodoAdapter extends BaseAdapter {
-
-
-        private final LayoutInflater layoutInflater;
-
-        public TodoAdapter(LayoutInflater layoutInflater) {
-
-            this.layoutInflater = layoutInflater;
-        }
-
-        private ArrayList<Todo> arrayList = new ArrayList<>();
-
-        @Override
-        public int getCount() {
-            return arrayList.size();
-        }
-
-        @Override
-        public Todo getItem(int i) {
-            return arrayList.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return 2;
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            return position % 2;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            Timber.d("Pos:" + i + " view:" + view);
-
-            if (getItemViewType(i) == 0) {
-                return getView0(i, view, viewGroup);
-            } else {
-                return getView1(i, view, viewGroup);
-            }
-
-        }
-
-        private View getView0(int i, View view, ViewGroup viewGroup) {
-            View inflatedView = view;
-            if (inflatedView == null) {
-                inflatedView = layoutInflater.inflate(R.layout.list_item, viewGroup, false);
-            }
-
-            ViewHolder viewHolder2 = (ViewHolder) inflatedView.getTag();
-            if (viewHolder2 == null) {
-                viewHolder2 = new ViewHolder(inflatedView);
-                inflatedView.setTag(viewHolder2);
-            }
-
-            Todo todo = getItem(i);
-            viewHolder2.itemContentTextView.setText(Boolean.toString(todo.isDone()));
-            viewHolder2.itemDoneCheckBox.setChecked(todo.isDone());
-            viewHolder2.itemDoneCheckBox.setText(todo.getContent());
-            return inflatedView;
-        }
-
-        private View getView1(int i, View view, ViewGroup viewGroup) {
-            View inflatedView = view;
-            if (inflatedView == null) {
-                inflatedView = layoutInflater.inflate(R.layout.list_item, viewGroup, false);
-            }
-
-            ViewHolder viewHolder2 = (ViewHolder) inflatedView.getTag();
-            if (viewHolder2 == null) {
-                viewHolder2 = new ViewHolder(inflatedView);
-                inflatedView.setTag(viewHolder2);
-            }
-
-            final Todo todo = getItem(i);
-            viewHolder2.itemContentTextView.setText(Boolean.toString(todo.isDone()));
-            viewHolder2.itemDoneCheckBox.setChecked(todo.isDone());
-            viewHolder2.itemDoneCheckBox.setText(todo.getContent());
-
-            inflatedView.setBackgroundResource(R.drawable.button_selector);
-            return inflatedView;
-        }
-
-        public void addAll(List<Todo> results) {
-            arrayList.addAll(results);
-            notifyDataSetChanged();
-        }
-
-        /**
-         * This class contains all butterknife-injected Views & Layouts from layout file 'list_item.xml'
-         * for easy to all layout elements.
-         *
-         * @author ButterKnifeZelezny, plugin for Android Studio by Avast Developers (http://github.com/avast)
-         */
-        static class ViewHolder {
-            @InjectView(R.id.itemDoneCheckBox)
-            CheckBox itemDoneCheckBox;
-            @InjectView(R.id.itemContentTextView)
-            TextView itemContentTextView;
-
-            ViewHolder(View view) {
-                ButterKnife.inject(this, view);
-            }
-        }
     }
 
 
@@ -212,18 +138,10 @@ public class TodoListActivity extends AppCompatActivity {
         }
         if (id == R.id.action_refresh) {
 
-            todoApi.getTodos(loginManager.getToken(), new Callback<TodosResponse>() {
-                @Override
-                public void success(TodosResponse todosResponse, Response response) {
-                    adapter.addAll(todosResponse.results);
 
-                }
+            Intent intent = new Intent(getApplicationContext(), RefreshIntentService.class);
 
-                @Override
-                public void failure(RetrofitError error) {
-
-                }
-            });
+            startService(intent);
 
 
         }
@@ -232,6 +150,12 @@ public class TodoListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void refresh() {
+
+        Cursor cursor = todoDao.query(loginManager.getUserId(), true);
+        adapter.changeCursor(cursor);
     }
 
     private void startAddTodo() {

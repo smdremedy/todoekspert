@@ -28,5 +28,5 @@ public interface TodoApi {
             "X-Parse-Revocable-Session: 1"
     })
     @GET("/1/classes/Todo")
-    void getTodos(@Header("X-Parse-Session-Token") String token, Callback<TodosResponse> callback);
+    TodosResponse getTodos(@Header("X-Parse-Session-Token") String token);
 }

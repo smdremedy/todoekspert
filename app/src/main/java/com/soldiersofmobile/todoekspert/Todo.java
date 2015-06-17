@@ -17,8 +17,14 @@ public class Todo implements Parcelable {
     public String objectId;
 
     //public Date updatedAt;
-    public Map<String, JsonObject> user;
+    public User user;
     //"user":{"__type":"Pointer","className":"_User","objectId":"S9g5cEY48r"}}]}
+
+    public static class User {
+        public String objectId;
+
+    }
+
 
 
     private String content;
