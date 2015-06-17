@@ -26,6 +26,7 @@ import retrofit.client.Response;
 import timber.log.Timber;
 
 
+
 public class TodoListActivity extends ActionBarActivity {
 
     public static final int REQUEST_CODE = 123;
