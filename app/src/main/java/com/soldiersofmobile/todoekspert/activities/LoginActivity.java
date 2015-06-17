@@ -20,6 +20,8 @@ import com.soldiersofmobile.todoekspert.api.TodoApi;
 import com.soldiersofmobile.todoekspert.api.UserResponse;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Qualifier;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -42,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements LoginManager.Log
     Button loginButton2;
     @InjectView(R.id.progressBar)
     ProgressBar progressBar;
+
 
     @Inject
     LoginManager loginManager;
