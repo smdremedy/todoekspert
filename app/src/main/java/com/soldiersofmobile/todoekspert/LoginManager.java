@@ -13,13 +13,14 @@ import com.soldiersofmobile.todoekspert.api.ApiError;
 import com.soldiersofmobile.todoekspert.api.TodoApi;
 import com.soldiersofmobile.todoekspert.api.UserResponse;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import timber.log.Timber;
 
-/**
- * Created by madejs on 16.06.15.
- */
+@Singleton
 public class LoginManager {
 
     public static final String USER_ID_PREFS_KEY = "userId";
@@ -109,6 +110,7 @@ public class LoginManager {
     };
 
 
+    @Inject
     public LoginManager(SharedPreferences sharedPreferences, TodoApi todoApi) {
         this.sharedPreferences = sharedPreferences;
         this.todoApi = todoApi;
@@ -134,14 +136,17 @@ public class LoginManager {
         SharedPreferences.Editor edit = sharedPreferences.edit();
         edit.clear();
         edit.apply();
+
+        token = null;
+        userId = null;
     }
 
     public void save(String objectId, String sessionToken) {
         SharedPreferences.Editor edit = sharedPreferences.edit();
         edit.putString(USER_ID_PREFS_KEY, objectId);
         edit.putString(TOKEN_PREFS_KEY, sessionToken);
-
-
         edit.apply();
+        token = sessionToken;
+        userId = objectId;
     }
 }

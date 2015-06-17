@@ -20,6 +20,8 @@ import com.soldiersofmobile.todoekspert.api.TodosResponse;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -31,16 +33,16 @@ public class TodoListActivity extends ActionBarActivity {
 
     public static final int REQUEST_CODE = 123;
 
-    private LoginManager loginManager;
-    private TodoApi todoApi;
+    @Inject
+    LoginManager loginManager;
+    @Inject
+    TodoApi todoApi;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App application = (App) getApplication();
-        loginManager = application.getLoginManager();
-        todoApi = application.getTodoApi();
+        App.getTodoComponent().inject(this);
 
         if(loginManager.needsLogin()) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);

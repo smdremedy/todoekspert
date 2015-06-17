@@ -19,6 +19,8 @@ import com.soldiersofmobile.todoekspert.api.ApiError;
 import com.soldiersofmobile.todoekspert.api.TodoApi;
 import com.soldiersofmobile.todoekspert.api.UserResponse;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -41,14 +43,15 @@ public class LoginActivity extends AppCompatActivity implements LoginManager.Log
     @InjectView(R.id.progressBar)
     ProgressBar progressBar;
 
-    private LoginManager loginManager;
+    @Inject
+    LoginManager loginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        App.getTodoComponent().inject(this);
 
-        loginManager = ((App) getApplication()).getLoginManager();
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
         Timber.plant(new Timber.DebugTree());

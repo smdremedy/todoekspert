@@ -4,31 +4,31 @@ import android.app.Application;
 import android.preference.PreferenceManager;
 
 import com.soldiersofmobile.todoekspert.api.TodoApi;
+import com.soldiersofmobile.todoekspert.di.DaggerTodoComponent;
+import com.soldiersofmobile.todoekspert.di.TodoComponent;
+import com.soldiersofmobile.todoekspert.di.TodoModule;
 
 import retrofit.RestAdapter;
 
 public class App extends Application {
 
-    public LoginManager getLoginManager() {
-        return loginManager;
+
+    public static TodoComponent getTodoComponent() {
+        return todoComponent;
     }
 
-    private LoginManager loginManager;
-    private TodoApi todoApi;
+    private static TodoComponent todoComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        todoApi = new RestAdapter.Builder()
-                .setEndpoint("https://api.parse.com")
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .build().create(TodoApi.class);
-        loginManager = new LoginManager(PreferenceManager.getDefaultSharedPreferences(this), todoApi);
+        todoComponent = DaggerTodoComponent.builder()
+                .todoModule(new TodoModule(this))
+                .build();
+
+
 
     }
 
-    public TodoApi getTodoApi() {
-        return todoApi;
-    }
 }
