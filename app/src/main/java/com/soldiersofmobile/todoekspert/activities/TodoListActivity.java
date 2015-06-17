@@ -5,8 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -22,6 +26,7 @@ import com.soldiersofmobile.todoekspert.LoginManager;
 import com.soldiersofmobile.todoekspert.R;
 import com.soldiersofmobile.todoekspert.RefreshIntentService;
 import com.soldiersofmobile.todoekspert.Todo;
+import com.soldiersofmobile.todoekspert.TodoProvider;
 import com.soldiersofmobile.todoekspert.api.TodoApi;
 import com.soldiersofmobile.todoekspert.api.TodosResponse;
 import com.soldiersofmobile.todoekspert.db.TodoDao;
@@ -36,7 +41,7 @@ import retrofit.client.Response;
 import timber.log.Timber;
 
 
-public class TodoListActivity extends AppCompatActivity {
+public class TodoListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int REQUEST_CODE = 123;
 
@@ -78,6 +83,11 @@ public class TodoListActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getTodoComponent().inject(this);
@@ -94,7 +104,10 @@ public class TodoListActivity extends AppCompatActivity {
         ButterKnife.inject(this);
 
 
+
+
         //adapter = new TodoAdapter(LayoutInflater.from(getApplicationContext()));
+
         adapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.list_item,
                 null, from, to, 0);
         adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
@@ -112,6 +125,26 @@ public class TodoListActivity extends AppCompatActivity {
             }
         });
         todosList.setAdapter(adapter);
+
+
+//        getContentResolver().registerContentObserver(TodoProvider.CONTENT_URI,
+//                true, new ContentObserver(null) {
+//                    @Override
+//                    public void onChange(boolean selfChange) {
+//
+//                        super.onChange(selfChange);
+//                        Timber.d("Refresh from observer");
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//                                refresh();
+//                            }
+//                        });
+//
+//                    }
+//                });
+        getSupportLoaderManager().initLoader(1, null, this);
 
 
     }
@@ -194,5 +227,28 @@ public class TodoListActivity extends AppCompatActivity {
         builder.setNegativeButton(android.R.string.no, null);
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getApplicationContext(),
+                TodoProvider.CONTENT_URI,
+                null, null, null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Timber.d("Reloaded cursor:" + data);
+        adapter.swapCursor(data);
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        Timber.d("Reset cursor");
+        adapter.swapCursor(null);
+
     }
 }

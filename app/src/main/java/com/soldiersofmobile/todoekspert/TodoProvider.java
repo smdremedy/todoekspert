@@ -1,5 +1,16 @@
 package com.soldiersofmobile.todoekspert;
 
+import android.content.ContentProvider;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+
+import com.soldiersofmobile.todoekspert.db.DBHelper;
+import com.soldiersofmobile.todoekspert.db.TodoDao;
+
 public class TodoProvider extends ContentProvider {
 
 
@@ -7,9 +18,9 @@ public class TodoProvider extends ContentProvider {
 	private static final int TODOS = 1;
 	private static final int TODOS_ID = 2;
 
-	private static final String AUTHORITY = "pl.com.javatech.todoekspert.Provider";
+	private static final String AUTHORITY = "com.soldiersofmobile.todoekspert.Provider";
 
-	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + 
+	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" +
 			TODOS_COLECTION);
 	
 	public static final String MIME_TYPE_DIR = "vnd.todoekspert.cursor.dir/todo";
@@ -39,7 +50,7 @@ public class TodoProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		mDBHelper = new TodoDao.DBHelper(getContext());
+		mDBHelper = new DBHelper(getContext());
 		return mDBHelper != null;
 	}
 

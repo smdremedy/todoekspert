@@ -13,4 +13,6 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="do_you_want_to_logout">Do you want to logout?</string>
     <string name="title_activity_add_todo">AddTodoActivity</string>
+    <string name="notification_title">New Todos</string>
+    <string name="notification_message">New todos: %d</string>
 </resources>

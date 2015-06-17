@@ -35,6 +35,10 @@
 
         <service android:name=".RefreshIntentService"
             />
+        <provider
+            android:authorities="com.soldiersofmobile.todoekspert.Provider"
+            android:exported="false"
+            android:name=".TodoProvider"/>
     </application>
 
 </manifest>
